@@ -4,11 +4,26 @@
 
 ---
 
-## 📸 Grafana Dashboard
+## 📸 Screenshots
 
+### Grafana Dashboard — CPU Usage per Pod
 ![Grafana Dashboard — CPU Usage per Pod](grafana-dashboard.png)
 
 *Panel: `rate(container_cpu_usage_seconds_total{pod=~"streamlit-app.*"}[1m])` — live CPU usage across Streamlit pods scraped via Prometheus.*
+
+---
+
+### Docker Desktop — Running Containers
+![Docker Desktop Containers](docker-containers.png)
+
+*Two active containers: `hungry_robinson` (Streamlit app on port 8501) and `kind-control-plane` (Kubernetes cluster node). Total resource usage: CPU 10.01%, Memory 1.72 GB / 7.42 GB.*
+
+---
+
+### Docker Desktop — Streamlit Container Logs
+![Streamlit Container Logs](docker-logs.png)
+
+*Container `hungry_robinson` running `streamlit-app:latest`. Uvicorn server started on `0.0.0.0:8501`. Accessible at `http://localhost:8501`.*
 
 ---
 
