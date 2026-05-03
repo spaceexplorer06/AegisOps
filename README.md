@@ -6,7 +6,14 @@
 
 ## 📸 Screenshots
 
-### Grafana Dashboard — CPU Usage per Pod
+### AegisOps Grafana Dashboard — Full Monitoring View
+![AegisOps Grafana Dashboard](grafana-aegisops-dashboard.png)
+
+*AegisOps dashboard showing Node CPU Usage, Memory Usage (gauge at 33%), Pod CPU Usage, and Container CPU Usage — all scraped via Prometheus from the Kubernetes cluster.*
+
+---
+
+### Grafana Dashboard — Container CPU (Bar Gauge)
 ![Grafana Dashboard — CPU Usage per Pod](grafana-dashboard.png)
 
 *Panel: `rate(container_cpu_usage_seconds_total{pod=~"streamlit-app.*"}[1m])` — live CPU usage across Streamlit pods scraped via Prometheus.*
@@ -93,19 +100,51 @@ Verify targets are up:
 http://localhost:9090/targets
 ```
 
-### Grafana — Add CPU Panel
+### Grafana — Dashboard Panels & PromQL Queries
 
-1. Open Grafana → **Dashboards → New Dashboard → Add Visualization**
-2. Select **Prometheus** as the data source
-3. In the query editor (**Code** mode), enter:
+The **AegisOps** dashboard consists of 4 panels. Add each as a separate visualization in Grafana using the queries below:
+
+---
+
+#### 📈 Panel 1 — Node CPU Usage
+> Visualization: **Time series**
 
 ```promql
-rate(container_cpu_usage_seconds_total{pod=~"streamlit-app.*"}[1m])
+rate(node_cpu_seconds_total[5m])
 ```
+Shows CPU usage across all modes (user, system, idle, etc.) for each node.
 
-4. Set visualization type to **Time series**
-5. Set unit to **Percent (0–100)** under *Standard options*
-6. Click **Apply** → **Save dashboard**
+---
+
+#### 🟢 Panel 2 — Memory Usage
+> Visualization: **Gauge**
+
+```promql
+100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))
+```
+Displays memory utilization as a percentage. Set unit to `Percent (0–100)`, threshold at 80% (yellow) and 90% (red).
+
+---
+
+#### 📊 Panel 3 — Pod CPU Usage
+> Visualization: **Time series**
+
+```promql
+sum by (pod)(rate(container_cpu_usage_seconds_total[5m]))
+```
+Aggregates CPU usage per pod — useful for spotting which pod is consuming the most resources.
+
+---
+
+#### 📊 Panel 4 — Container CPU Usage
+> Visualization: **Time series**
+
+```promql
+rate(container_cpu_usage_seconds_total[5m])
+```
+Per-container CPU usage breakdown — more granular than pod-level view.
+
+---
 
 ---
 
